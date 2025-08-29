@@ -237,11 +237,12 @@ img {
     display: block;
     height: 3px;
     width: 100%;
-    background: var(--primary-color);
+    background: white;
     transition: all 0.3s ease;
     border-radius: 3px;
     transform-origin: left center;
     pointer-events: none;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
 }
 
 .hamburger.active span:nth-child(1) {
@@ -263,13 +264,15 @@ img {
 @media (max-width: 992px) {
     .hamburger {
         display: flex;
+        position: relative;
+        z-index: 1002;
     }
     
     .nav-links {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 80%;
+        width: 70%;
         max-width: 300px;
         height: 100vh;
         background: white;
@@ -283,6 +286,20 @@ img {
         margin: 0;
     }
     
+    .nav-links a {
+        color: var(--primary-color);
+        padding: 12px 20px;
+        margin: 8px 0;
+        width: 80%;
+        text-align: center;
+    }
+    
+    .nav-links a.active {
+        color: white;
+        background-color: var(--primary-color);
+        border-radius: 4px;
+    }
+    
     .nav-links.active {
         right: 0;
     }
@@ -293,17 +310,15 @@ img {
         text-align: center;
     }
     
-    .nav-links a {
-        font-size: 1.2rem;
-        padding: 10px 0;
-        display: block;
-        width: 100%;
-    }
-    
     .nav-links .btn {
         margin-top: 20px;
         padding: 12px 0;
         width: 100%;
+    }
+    
+    .hamburger.active span {
+        background: white;
+        box-shadow: 0 0 2px rgba(0,0,0,0.3);
     }
 }
 
@@ -311,6 +326,8 @@ img {
 @media (max-width: 992px) {
     .hamburger {
         display: flex;
+        position: relative;
+        z-index: 1002;
     }
     
     .nav-links {
@@ -330,6 +347,20 @@ img {
         padding: 80px 20px 40px;
     }
     
+    .nav-links a {
+        color: var(--primary-color);
+        padding: 12px 20px;
+        margin: 8px 0;
+        width: 80%;
+        text-align: center;
+    }
+    
+    .nav-links a.active {
+        color: white;
+        background-color: var(--primary-color);
+        border-radius: 4px;
+    }
+    
     .nav-links.active {
         right: 0;
     }
@@ -338,13 +369,6 @@ img {
         margin: 15px 0;
         width: 100%;
         text-align: center;
-    }
-    
-    .nav-links a {
-        font-size: 1.2rem;
-        padding: 10px 0;
-        display: block;
-        width: 100%;
     }
     
     .nav-links .btn {
