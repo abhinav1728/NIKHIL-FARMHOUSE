@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "nikhil farm",
+			"path": "."
+		},
+		{
+			"name": "assets",
+			"path": "../Users/abhin/FTF/assets"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "assets",
+		"liveServer.settings.port": 5501
+	}
+}

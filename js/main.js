@@ -1,0 +1,403 @@
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    
+    // Mobile Navigation Elements
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    const navItems = document.querySelectorAll('.nav-links a');
+    const body = document.body;
+    
+    console.log('Hamburger element:', hamburger);
+    console.log('Nav links:', navLinks);
+    console.log('Nav items:', navItems);
+    
+    // Toggle mobile menu
+    function toggleMenu() {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        body.classList.toggle('no-scroll');
+    }
+    
+    // Close mobile menu when clicking a nav link
+    function closeMenu() {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+        body.classList.remove('no-scroll');
+    }
+    
+    // Event Listeners
+    if (hamburger && navLinks) {
+        console.log('Adding event listeners');
+        hamburger.addEventListener('click', function(e) {
+            console.log('Hamburger clicked');
+            e.stopPropagation();
+            toggleMenu();
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (navLinks.classList.contains('active') && 
+                !e.target.closest('.nav-links') && 
+                !e.target.closest('.hamburger')) {
+                closeMenu();
+            }
+        });
+        
+        // Close menu when clicking on nav items
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                console.log('Nav item clicked');
+                closeMenu();
+            });
+        });
+        
+        // Prevent clicks inside the menu from closing it
+        navLinks.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    } else {
+        console.error('Could not find hamburger menu or nav links');
+    }
+
+    // Sticky Header on Scroll
+    const header = document.querySelector('.header');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll <= 0) {
+            header.classList.remove('scrolled');
+            return;
+        }
+        
+        if (currentScroll > lastScroll && !header.classList.contains('scrolled')) {
+            // Scrolling down
+            header.classList.add('scrolled');
+        } else if (currentScroll < lastScroll && header.classList.contains('scrolled')) {
+            // Scrolling up
+            header.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+
+    // Handle navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === '#' || targetId === '#!') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                e.preventDefault();
+                window.scrollTo(0, targetElement.offsetTop - 80);
+                history.replaceState(null, '', targetId);
+            }
+        });
+    });
+
+    // Handle regular navigation links
+    document.querySelectorAll('a[href^="."], a[href^="/"]').forEach(link => {
+        if (link.hostname === window.location.hostname && 
+            !link.getAttribute('target') && 
+            !link.classList.contains('no-instant')) {
+            
+            link.addEventListener('click', function(e) {
+                // If it's the same page, don't prevent default
+                if (this.pathname === window.location.pathname) return;
+                
+                e.preventDefault();
+                window.location.href = this.href;
+            });
+        }
+    });
+
+    // Booking Form Handling
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const checkIn = document.getElementById('check-in').value;
+            const checkOut = document.getElementById('check-out').value;
+            const guests = document.getElementById('guests').value;
+            
+            // Basic validation
+            if (!checkIn || !checkOut) {
+                alert('Please select both check-in and check-out dates.');
+                return;
+            }
+            
+            // Here you would typically send this data to a server
+            alert(`Booking request received!\nCheck-in: ${checkIn}\nCheck-out: ${checkOut}\nGuests: ${guests}\n\nThis is a demo. In a real application, this would connect to a booking system.`);
+            
+            // Reset form
+            bookingForm.reset();
+        });
+    }
+
+    // Set minimum date for check-in to today
+    const today = new Date().toISOString().split('T')[0];
+    const checkInInput = document.getElementById('check-in');
+    const checkOutInput = document.getElementById('check-out');
+    
+    if (checkInInput) {
+        checkInInput.min = today;
+        
+        // Set minimum check-out date to day after check-in
+        checkInInput.addEventListener('change', function() {
+            if (checkOutInput) {
+                const checkInDate = new Date(this.value);
+                const nextDay = new Date(checkInDate);
+                nextDay.setDate(checkInDate.getDate() + 1);
+                checkOutInput.min = nextDay.toISOString().split('T')[0];
+                
+                // Reset check-out if it's before the new min date
+                if (checkOutInput.value && new Date(checkOutInput.value) < nextDay) {
+                    checkOutInput.value = '';
+                }
+            }
+        });
+    }
+
+    // Initialize datepickers with min date
+    if (checkInInput) checkInInput.value = today;
+    
+    // Testimonial Slider
+    let currentTestimonial = 0;
+    const testimonials = document.querySelectorAll('.testimonial');
+    
+    function showTestimonial(index) {
+        testimonials.forEach((testimonial, i) => {
+            testimonial.style.display = i === index ? 'block' : 'none';
+        });
+    }
+    
+    // Auto-rotate testimonials if there are multiple
+    if (testimonials.length > 1) {
+        showTestimonial(currentTestimonial);
+        
+        setInterval(() => {
+            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+            showTestimonial(currentTestimonial);
+        }, 5000);
+    }
+
+    // Add animation class when elements come into view
+    const animateOnScroll = () => {
+        const elements = document.querySelectorAll('.feature-card, .welcome-image, .gallery-item, .contact-item');
+        
+        elements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (elementTop < windowHeight - 100) {
+                element.classList.add('animate');
+            }
+        });
+    };
+    
+    // Initial check
+    animateOnScroll();
+    
+    // Check on scroll
+    window.addEventListener('scroll', animateOnScroll);
+
+    // Google Maps Functionality
+    function initMap() {
+        // Farm coordinates (No. 4A, Sector 135 HPS FARMS, Near wazidpur)
+        const farmLocation = { lat: 28.4595, lng: 77.0266 }; // Approximate coordinates for Noida Sector 135
+        
+        // Create map
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            center: farmLocation,
+            styles: [
+                {
+                    featureType: 'poi',
+                    elementType: 'labels',
+                    stylers: [{ visibility: 'off' }]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'labels',
+                    stylers: [{ visibility: 'off' }]
+                }
+            ]
+        });
+
+        // Add farm marker
+        new google.maps.Marker({
+            position: farmLocation,
+            map: map,
+            title: 'Cozy Glory Shed',
+            icon: {
+                url: 'https://maps.google.com/mapfiles/ms/icons/farm.png',
+                scaledSize: new google.maps.Size(40, 40)
+            }
+        });
+
+        // Try HTML5 geolocation
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Add user location marker
+                    new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        title: 'Your Location',
+                        icon: {
+                            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                        }
+                    });
+
+                    // Calculate and display route
+                    const directionsService = new google.maps.DirectionsService();
+                    const directionsRenderer = new google.maps.DirectionsRenderer({
+                        map: map,
+                        suppressMarkers: true,
+                        polylineOptions: {
+                            strokeColor: '#4CAF50',
+                            strokeWeight: 4
+                        }
+                    });
+
+                    const request = {
+                        origin: userLocation,
+                        destination: farmLocation,
+                        travelMode: 'DRIVING'
+                    };
+
+                    directionsService.route(request, (result, status) => {
+                        if (status === 'OK') {
+                            directionsRenderer.setDirections(result);
+                            
+                            // Show distance and duration
+                            const route = result.routes[0].legs[0];
+                            document.getElementById('distance').textContent = route.distance.text;
+                            document.getElementById('duration').textContent = route.duration.text;
+                            
+                            // Update UI
+                            document.getElementById('location-info').style.display = 'none';
+                            document.getElementById('distance-result').style.display = 'block';
+                        }
+                    });
+
+                    // Center map to show both locations
+                    const bounds = new google.maps.LatLngBounds();
+                    bounds.extend(userLocation);
+                    bounds.extend(farmLocation);
+                    map.fitBounds(bounds);
+                },
+                (error) => {
+                    // Handle location access denied
+                    console.error('Error getting location:', error);
+                    map.setCenter(farmLocation);
+                    
+                    // Show error message
+                    const locationInfo = document.getElementById('location-info');
+                    locationInfo.innerHTML = '<i class="fas fa-exclamation-circle"></i> Location access denied. Using default location.';
+                }
+            );
+        } else {
+            // Browser doesn't support Geolocation
+            console.error('Geolocation is not supported by this browser.');
+            map.setCenter(farmLocation);
+            
+            const locationInfo = document.getElementById('location-info');
+            locationInfo.innerHTML = '<i class="fas fa-exclamation-circle"></i> Geolocation is not supported by your browser.';
+        }
+    }
+
+    // Update active navigation links
+    function updateActiveNav() {
+        const currentPath = window.location.pathname;
+        const currentHash = window.location.hash || '';
+        const navigationLinks = document.querySelectorAll('.nav-links a');
+        
+        navigationLinks.forEach(link => {
+            const linkHref = link.getAttribute('href');
+            const isActive = 
+                (linkHref === 'index.html' && (currentPath.endsWith('/') || currentPath.endsWith('index.html'))) ||
+                (linkHref !== 'index.html' && currentPath.endsWith(linkHref)) ||
+                (currentHash && linkHref.endsWith(currentHash));
+            
+            link.classList.toggle('active', isActive);
+        });
+    }
+
+    // Run on page load and when navigating with back/forward buttons
+    document.addEventListener('DOMContentLoaded', updateActiveNav);
+    window.addEventListener('popstate', updateActiveNav);
+});
+
+// Add loading animation
+window.addEventListener('load', function() {
+    const loader = document.createElement('div');
+    loader.className = 'page-loader';
+    loader.innerHTML = `
+        <div class="loader-spinner"></div>
+        <p>Loading Cozy Glory Shed...</p>
+    `;
+    
+    document.body.appendChild(loader);
+    
+    // Remove loader after page is fully loaded
+    setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 500);
+    }, 1000);
+    
+    // Add styles for loader
+    const style = document.createElement('style');
+    style.textContent = `
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2e5a3d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .page-loader p {
+            color: #2e5a3d;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+    `;
+    
+    document.head.appendChild(style);
+});

@@ -1,0 +1,11 @@
+{
+    "liveServer.settings.root": "/",
+    "liveServer.settings.CustomBrowser": "chrome",
+    "liveServer.settings.ignoreFiles": [
+        "**/.vscode/**",
+        "**/.git/**",
+        "**/node_modules/**"
+    ],
+    "liveServer.settings.port": 5501,
+    "liveServer.settings.file": "index.html"
+}
