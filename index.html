@@ -200,37 +200,378 @@
     </section>
 
     <!-- Booking Section -->
-    <section id="book-now" class="booking-section">
+    <section id="book-now" class="booking-section" style="background: #f8f9fa; padding: 60px 0;">
+        <style>
+            .booking-form-container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #34495e;
+                font-weight: 500;
+            }
+            .form-control {
+                width: 100%;
+                padding: 12px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+            .form-control:focus {
+                border-color: #2e5a3d;
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(46, 90, 61, 0.2);
+            }
+            .btn-primary {
+                background: #2e5a3d;
+                color: white;
+                border: none;
+                padding: 12px 25px;
+                border-radius: 6px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                width: 100%;
+                font-size: 1.1rem;
+            }
+            .btn-primary:hover {
+                background: #1f3d29;
+            }
+            .booking-summary {
+                background: #f9f9f9;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+                border-left: 4px solid #2e5a3d;
+            }
+            .hidden {
+                display: none;
+            }
+        </style>
         <div class="container">
-            <div class="booking-form-container">
-                <div class="booking-header">
-                    <h2>Book Your Stay</h2>
-                    <p>Fill out the form below to check availability and book your farm stay experience.</p>
-                </div>
-                <form id="booking-form" class="booking-form">
-                    <div class="form-group">
-                        <label for="check-in">Check-in</label>
-                        <input type="date" id="check-in" name="check-in" required>
+            <div class="section-header" style="text-align: center; margin-bottom: 40px;">
+                <h2 style="color: #2c3e50; font-size: 2.2rem; margin-bottom: 15px;">Book Your Stay</h2>
+                <div style="width: 80px; height: 4px; background: #2e5a3d; margin: 0 auto 20px;"></div>
+                <p style="color: #7f8c8d; font-size: 1.1rem;">Experience luxury farm stay at ₹18,000 per night</p>
+            </div>
+            
+            <div class="booking-form-container" style="max-width: 800px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden;">
+                <form id="booking-form" class="booking-form" style="padding: 30px;" action="https://formspree.io/f/xdklerda" method="POST" onsubmit="return handleFormSubmit(event)">
+                    
+                    <!-- Formspree Configuration -->
+                    <input type="hidden" name="_subject" value="New Booking - Cozy Glory Shed">
+                    <input type="hidden" name="_replyto" value="cgsfarms07@gmail.com">
+                    <input type="hidden" name="_language" value="en">
+                    <input type="hidden" id="form-nights" name="Nights">
+                    <input type="hidden" id="form-total" name="Total_Amount">
+                    
+                    <!-- Step 1: Date Selection -->
+                    <div id="step-1">
+                        <h3 style="color: #2c3e50; margin-bottom: 25px; text-align: center;">Book Your Stay</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="check-in" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Check-in Date</label>
+                                <input type="date" id="check-in" name="check-in" required onchange="calculateTotal()" style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem; transition: all 0.3s ease;" onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'">
+                            </div>
+                            <div class="form-group">
+                                <label for="check-out" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Check-out Date</label>
+                                <input type="date" id="check-out" name="check-out" required onchange="calculateTotal()" style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem; transition: all 0.3s ease;" onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <label for="guests" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Number of Guests</label>
+                            <select id="guests" name="guests" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem; background-color: white; cursor: pointer; transition: all 0.3s ease;" onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'">
+                                <option value="1">1 Guest</option>
+                                <option value="2" selected>2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5+ Guests</option>
+                            </select>
+                        </div>
+                        
+                        <div id="booking-summary" class="booking-summary" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 25px 0 40px 0; display: block; border-left: 4px solid #e67e22;">
+                            <h4 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px; font-size: 1.2rem;">Booking Summary</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <p style="margin: 5px 0; color: #7f8c8d;">Check-in:</p>
+                                    <p style="margin: 5px 0; color: #7f8c8d;">Check-out:</p>
+                                    <p style="margin: 5px 0; color: #7f8c8d;">Nights:</p>
+                                    <p style="margin: 5px 0; color: #7f8c8d; font-weight: 600;">Rate per night:</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p id="check-in-date" style="margin: 5px 0; color: #2c3e50; font-weight: 500;">-</p>
+                                    <p id="check-out-date" style="margin: 5px 0; color: #2c3e50; font-weight: 500;">-</p>
+                                    <p id="nights-count" style="margin: 5px 0; color: #2c3e50; font-weight: 500;">0</p>
+                                    <p style="margin: 5px 0; color: #2c3e50; font-weight: 600;">₹18,000</p>
+                                </div>
+                            </div>
+                            <div style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                <p style="margin: 0; font-size: 1.1rem; font-weight: 600; color: #2c3e50;">Total Amount:</p>
+                                <p id="total-amount" style="margin: 0; font-size: 1.3rem; font-weight: 700; color: #e67e22;">₹0</p>
+                            </div>
+                        </div>
+                        
+                        <div id="contact-fields" style="display: block; margin-top: 20px;">
+                            <h3 style="color: #2c3e50; margin: 30px 0 20px; padding-top: 20px; border-top: 1px solid #eee;">Your Information</h3>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label for="name" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Full Name *</label>
+                                <input type="text" id="name" name="name" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem; transition: all 0.3s ease;" onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div class="form-group">
+                                    <label for="email" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Email Address</label>
+                                    <input type="email" id="email" name="email" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem;" placeholder="Your email address" onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Phone Number</label>
+                                    <input type="tel" id="phone" name="Phone" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem;" placeholder="Your phone number"> onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 25px;">
+                                <label for="message" style="display: block; margin-bottom: 8px; color: #34495e; font-weight: 500;">Special Requests (Optional)</label>
+                                <textarea id="message" name="Special Requests" style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem; height: 120px; resize: none;" placeholder="Any special requests or additional information" onfocus="this.style.borderColor='#e67e22'" onblur="this.style.borderColor='#e0e0e0'"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; font-weight: 600; background: #2e5a3d; border: none; border-radius: 6px; color: white; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#1f3d29'" onmouseout="this.style.backgroundColor='#2e5a3d'">
+                                Confirm Booking <i class="fas fa-paper-plane" style="margin-left: 8px;"></i>
+                            </button>
+                        </div>
+                        <button type="button" id="proceed-btn" class="btn btn-primary" onclick="showContactForm()" style="display: none; width: 100%; padding: 15px; font-size: 1.1rem; font-weight: 600; background: #2e5a3d; border: none; border-radius: 6px; color: white; cursor: pointer; transition: all 0.3s ease; margin-top: 10px;" onmouseover="this.style.backgroundColor='#1f3d29'" onmouseout="this.style.backgroundColor='#2e5a3d'">
+                            Continue to Booking <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="check-out">Check-out</label>
-                        <input type="date" id="check-out" name="check-out" required>
+                    
+                    <!-- Contact Information (already included in the main form) -->
+
+                    <!-- Confirmation Message -->
+                    <div id="confirmation-message" class="hidden" style="text-align: center; padding: 30px 20px;">
+                        <div style="width: 80px; height: 80px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                            <i class="fas fa-check" style="font-size: 40px; color: #4caf50;"></i>
+                        </div>
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Booking Request Sent!</h3>
+                        <p style="color: #7f8c8d; margin-bottom: 25px;">Thank you for your booking request. We will contact you shortly to confirm your reservation.</p>
+                        <button type="button" onclick="resetForm()" class="btn btn-primary" style="width: auto; padding: 10px 25px; display: inline-block;">
+                            Make Another Booking
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="guests">Guests</label>
-                        <select id="guests" name="guests" required>
-                            <option value="1">1 Guest</option>
-                            <option value="2" selected>2 Guests</option>
-                            <option value="3">3 Guests</option>
-                            <option value="4">4 Guests</option>
-                            <option value="5">5+ Guests</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Check Availability</button>
                 </form>
             </div>
         </div>
     </section>
+    
+    <script>
+    function handleFormSubmit(event) {
+        // Prevent default form submission
+        event.preventDefault();
+        
+        // Update hidden fields with current values
+        document.getElementById('form-nights').value = document.getElementById('nights-count').textContent;
+        document.getElementById('form-total').value = document.getElementById('total-amount').textContent;
+        
+        // Show loading state
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        // Submit the form programmatically
+        const form = event.target;
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Show success message
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('contact-fields').classList.add('hidden');
+                document.getElementById('confirmation-message').classList.remove('hidden');
+                form.reset();
+            } else {
+                throw new Error('Form submission failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error submitting your booking. Please try again or contact us directly.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        });
+        
+        return false;
+    }
+    
+    // Format date as "DD MMM YYYY" (e.g., "30 Aug 2025")
+    function formatDate(dateString) {
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-IN', options);
+    }
+
+    function calculateTotal() {
+        const checkIn = document.getElementById('check-in').value;
+        const checkOut = document.getElementById('check-out').value;
+        const bookingSummary = document.getElementById('booking-summary');
+        const contactFields = document.getElementById('contact-fields');
+        
+        if (checkIn && checkOut) {
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            const startDate = new Date(checkIn);
+            const endDate = new Date(checkOut);
+            
+            // Calculate the difference in days
+            const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay));
+            const total = diffDays * 18000; // ₹18,000 per day
+            
+            // Update the booking summary
+            document.getElementById('check-in-date').textContent = formatDate(checkIn);
+            document.getElementById('check-out-date').textContent = formatDate(checkOut);
+            document.getElementById('nights-count').textContent = diffDays;
+            document.getElementById('total-amount').textContent = '₹' + total.toLocaleString('en-IN');
+            
+            // Show booking summary and contact form
+            bookingSummary.classList.remove('hidden');
+            contactFields.classList.remove('hidden');
+            
+            // Scroll to the contact form
+            contactFields.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            bookingSummary.classList.add('hidden');
+            contactFields.classList.add('hidden');
+        }
+    }
+    
+    // Form submission is now handled by handleBooking()
+    
+    function resetForm() {
+        // Reset the form
+        document.getElementById('booking-form').reset();
+        
+        // Hide confirmation message and show the form
+        document.getElementById('confirmation-message').classList.add('hidden');
+        document.getElementById('step-1').style.display = 'block';
+        document.getElementById('booking-summary').classList.add('hidden');
+        document.getElementById('contact-fields').classList.add('hidden');
+    }
+    
+    // Set minimum date to today for date inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('check-in').min = today;
+        document.getElementById('check-out').min = today;
+        
+        // Update min date for check-out when check-in date changes
+        document.getElementById('check-in').addEventListener('change', function() {
+            document.getElementById('check-out').min = this.value;
+            if (new Date(document.getElementById('check-out').value) < new Date(this.value)) {
+                document.getElementById('check-out').value = this.value;
+            }
+            calculateTotal();
+        });
+        
+        // Recalculate when check-out date changes
+        document.getElementById('check-out').addEventListener('change', calculateTotal);
+        
+        // Recalculate when number of guests changes
+        document.getElementById('guests').addEventListener('change', calculateTotal);
+    });
+    </script>
+    
+    <script>
+    function calculateTotal() {
+        const checkIn = document.getElementById('check-in').value;
+        const checkOut = document.getElementById('check-out').value;
+        const bookingSummary = document.getElementById('booking-summary');
+        const checkAvailabilityBtn = document.getElementById('check-availability-btn');
+        
+        if (checkIn && checkOut) {
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            const startDate = new Date(checkIn);
+            const endDate = new Date(checkOut);
+            
+            // Calculate the difference in days
+            const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay));
+            const total = diffDays * 18000; // ₹18,000 per day
+            
+            // Update the booking summary
+            document.getElementById('nights-count').textContent = diffDays;
+            document.getElementById('total-amount').textContent = '₹' + total.toLocaleString('en-IN');
+            
+            // Show the booking summary and proceed button
+            bookingSummary.style.display = 'block';
+            checkAvailabilityBtn.style.display = 'block';
+            
+            // Hide the contact form if already shown
+            document.getElementById('contact-fields').style.display = 'none';
+            document.querySelector('.contact-heading').style.display = 'none';
+        } else {
+            bookingSummary.style.display = 'none';
+            checkAvailabilityBtn.style.display = 'none';
+        }
+    }
+    
+    function showContactForm() {
+        // Hide the proceed button
+        document.getElementById('check-availability-btn').style.display = 'none';
+        
+        // Show the contact form
+        document.querySelector('.contact-heading').style.display = 'block';
+        document.getElementById('contact-fields').style.display = 'block';
+        
+        // Scroll to the contact form
+        document.getElementById('contact-fields').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function handleBookingSubmit(event) {
+        // Update hidden fields with current values
+        document.getElementById('form-nights').value = document.getElementById('nights-count').textContent;
+        document.getElementById('form-total').value = document.getElementById('total-amount').textContent;
+        
+        // Show loading state
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        // Let the form submit normally
+        return true;
+    }
+    
+    // Set minimum date to today for date inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('check-in').min = today;
+        document.getElementById('check-out').min = today;
+        
+        // Initialize datepickers if needed
+        flatpickr("input[type=date]", {
+            minDate: 'today',
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+    });
+    </script>
+    <!-- Add Formspree script for form submission -->
 
     <!-- Contact Info -->
     <section class="contact-info">
@@ -271,7 +612,7 @@
             </div>
             <div class="map-container">
                 <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3505.697200000001!2d77.0239!3d28.4595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d1858f5e6c8d9%3A0x3c0f1f9b7c5e0e1f2!2sHPS%20FARMS%2C%20Sector%20135%2C%20Noida%2C%20Uttar%20Pradesh%20201301!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3507.1234!2d77.4043888888889!3d28.47525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDI4JzMwLjkiTiA3N8KwMjQnMTUuOCJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
                     width="100%" 
                     height="450" 
                     style="border:0;" 
@@ -281,7 +622,7 @@
                 </iframe>
                 <div class="map-address">
                     <p><i class="fas fa-map-marker-alt"></i> No. 4A, Sector 135 HPS FARMS, Near wazidpur, Noida, Uttar Pradesh 201301</p>
-                    <a href="https://maps.google.com/maps?q=28.4595,77.0266" target="_blank" class="btn btn-primary">
+                    <a href="https://www.google.com/maps?q=28.47525,77.4043888888889" target="_blank" class="btn btn-primary">
                         <i class="fas fa-directions"></i> Get Directions
                     </a>
                 </div>
@@ -326,5 +667,41 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script>
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Show loading state on all submit buttons
+            const submitBtns = document.querySelectorAll('#booking-form button[type="submit"]');
+            submitBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            });
+            
+            // Update hidden fields with current values
+            const nightsCount = document.getElementById('nights-count');
+            const totalAmount = document.getElementById('total-amount');
+            
+            if (nightsCount) document.getElementById('form-nights').value = nightsCount.textContent || '1';
+            if (totalAmount) document.getElementById('form-total').value = totalAmount.textContent || '18000';
+            
+            // Submit the form
+            const form = e.target;
+            
+            // Simple form submission without AJAX first
+            form.submit();
+            
+            // If form submission is successful, this won't be reached
+            // If it fails, the following will execute
+            setTimeout(() => {
+                submitBtns.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Confirm Booking <i class="fas fa-paper-plane"></i>';
+                });
+            }, 5000);
+            
+            return false;
+        }
+    </script>
 </body>
 </html>

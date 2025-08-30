@@ -118,8 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const bookingForm = document.getElementById('booking-form');
     if (bookingForm) {
         bookingForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             // Get form values
             const checkIn = document.getElementById('check-in').value;
             const checkOut = document.getElementById('check-out').value;
@@ -127,15 +125,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Basic validation
             if (!checkIn || !checkOut) {
+                e.preventDefault();
                 alert('Please select both check-in and check-out dates.');
-                return;
+                return false;
             }
             
-            // Here you would typically send this data to a server
-            alert(`Booking request received!\nCheck-in: ${checkIn}\nCheck-out: ${checkOut}\nGuests: ${guests}\n\nThis is a demo. In a real application, this would connect to a booking system.`);
-            
-            // Reset form
-            bookingForm.reset();
+            // Form will now submit to FormSubmit
+            return true;
         });
     }
 
