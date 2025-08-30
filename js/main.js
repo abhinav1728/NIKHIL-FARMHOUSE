@@ -117,50 +117,143 @@ document.addEventListener('DOMContentLoaded', function() {
     // Booking Form Handling
     const bookingForm = document.getElementById('booking-form');
     if (bookingForm) {
+        // Add input event listeners for better mobile UX
+        const formInputs = bookingForm.querySelectorAll('input, textarea, select');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                // Scroll to the input field on focus (for mobile)
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Add a class to style the focused input
+                this.classList.add('input-focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.classList.remove('input-focused');
+            });
+        });
+        
+        // Handle form submission
         bookingForm.addEventListener('submit', function(e) {
             // Get form values
-            const checkIn = document.getElementById('check-in').value;
-            const checkOut = document.getElementById('check-out').value;
-            const guests = document.getElementById('guests').value;
+            const checkIn = document.getElementById('check-in');
+            const checkOut = document.getElementById('check-out');
+            const guests = document.getElementById('guests');
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const phone = document.getElementById('phone');
             
-            // Basic validation
-            if (!checkIn || !checkOut) {
-                e.preventDefault();
-                alert('Please select both check-in and check-out dates.');
+            // Reset error states
+            [checkIn, checkOut, guests, name, email, phone].forEach(field => {
+                field.style.borderColor = '#ddd';
+            });
+            
+            // Validate required fields
+            let isValid = true;
+            const requiredFields = [
+                { field: checkIn, name: 'Check-in date' },
+                { field: checkOut, name: 'Check-out date' },
+                { field: guests, name: 'Number of guests' },
+                { field: name, name: 'Full name' },
+                { field: email, name: 'Email' },
+                { field: phone, name: 'Phone number' }
+            ];
+            
+            requiredFields.forEach(({ field, name }) => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#e74c3c';
+                    isValid = false;
+                    // Scroll to first error
+                    if (isValid === false) {
+                        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    alert(`Please fill in the ${name} field.`);
+                    return false;
+                }
+            });
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email.value && !emailRegex.test(email.value)) {
+                email.style.borderColor = '#e74c3c';
+                isValid = false;
+                email.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                alert('Please enter a valid email address.');
                 return false;
             }
             
-            // Form will now submit to FormSubmit
+            // Validate phone number (basic validation)
+            const phoneRegex = /^[0-9]{10,15}$/;
+            if (phone.value && !phoneRegex.test(phone.value.replace(/[^0-9]/g, ''))) {
+                phone.style.borderColor = '#e74c3c';
+                isValid = false;
+                phone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                alert('Please enter a valid phone number (10-15 digits).');
+                return false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // If all validations pass, the form will submit
             return true;
         });
     }
 
     // Set minimum date for check-in to today
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Format date as YYYY-MM-DD
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    
+    const todayFormatted = formatDate(today);
     const checkInInput = document.getElementById('check-in');
     const checkOutInput = document.getElementById('check-out');
     
     if (checkInInput) {
-        checkInInput.min = today;
+        checkInInput.min = todayFormatted;
+        checkInInput.value = todayFormatted;
         
         // Set minimum check-out date to day after check-in
-        checkInInput.addEventListener('change', function() {
-            if (checkOutInput) {
-                const checkInDate = new Date(this.value);
-                const nextDay = new Date(checkInDate);
-                nextDay.setDate(checkInDate.getDate() + 1);
-                checkOutInput.min = nextDay.toISOString().split('T')[0];
-                
-                // Reset check-out if it's before the new min date
-                if (checkOutInput.value && new Date(checkOutInput.value) < nextDay) {
-                    checkOutInput.value = '';
-                }
+        const updateCheckOutMinDate = () => {
+            if (!checkInInput.value) return;
+            
+            const checkInDate = new Date(checkInInput.value);
+            const nextDay = new Date(checkInDate);
+            nextDay.setDate(checkInDate.getDate() + 1);
+            
+            const nextDayFormatted = formatDate(nextDay);
+            checkOutInput.min = nextDayFormatted;
+            
+            // Reset check-out if it's before the new min date
+            if (checkOutInput.value && new Date(checkOutInput.value) < nextDay) {
+                checkOutInput.value = '';
             }
-        });
+            
+            // If check-out is not set, set it to next day
+            if (!checkOutInput.value) {
+                checkOutInput.value = nextDayFormatted;
+            }
+        };
+        
+        checkInInput.addEventListener('change', updateCheckOutMinDate);
+        
+        // Initialize check-out date to tomorrow
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        checkOutInput.min = formatDate(tomorrow);
+        checkOutInput.value = formatDate(tomorrow);
+        
+        // Initial update of check-out min date
+        updateCheckOutMinDate();
     }
-
-    // Initialize datepickers with min date
-    if (checkInInput) checkInInput.value = today;
     
     // Testimonial Slider
     let currentTestimonial = 0;
@@ -204,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Google Maps Functionality
     function initMap() {
-        // Farm coordinates (No. 4A, Sector 135 HPS FARMS, Near wazidpur)
-        const farmLocation = { lat: 28.4595, lng: 77.0266 }; // Approximate coordinates for Noida Sector 135
+        // Farm coordinates (28°28'30.9"N 77°24'15.8"E)
+        const farmLocation = { lat: 28.47525, lng: 77.4043888888889 }; // 28°28'30.9"N 77°24'15.8"E
         
         // Create map
         const map = new google.maps.Map(document.getElementById('map'), {
