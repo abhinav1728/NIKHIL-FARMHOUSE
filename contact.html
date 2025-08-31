@@ -242,7 +242,6 @@
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-tripadvisor"></i></a>
                     </div>
                 </div>
                 <div class="footer-links">
@@ -270,34 +269,13 @@
 
     <script src="js/main.js"></script>
     <script>
-        // Handle FAQ accordion
-        document.addEventListener('DOMContentLoaded', function() {
-            const faqQuestions = document.querySelectorAll('.faq-question');
-            
-            faqQuestions.forEach(question => {
-                question.addEventListener('click', () => {
-                    const item = question.parentNode;
-                    const isOpen = item.classList.contains('active');
-                    
-                    // Close all other items
-                    document.querySelectorAll('.faq-item').forEach(faqItem => {
-                        faqItem.classList.remove('active');
-                    });
-                    
-                    // Toggle current item
-                    if (!isOpen) {
-                        item.classList.add('active');
-                    }
-                });
-            });
-            
-            // Handle contact form submission
-            const contactForm = document.getElementById('contact-form');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    // Get form values
+        // Handle contact form submission
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
                     const formData = new FormData(this);
                     const formValues = Object.fromEntries(formData.entries());
                     

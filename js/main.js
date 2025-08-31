@@ -2,6 +2,107 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
     
+    // Initialize FAQ functionality
+    function initFAQ() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        if (!faqItems.length) return;
+        
+        // Add ARIA attributes for accessibility
+        faqItems.forEach((item, index) => {
+            const question = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+            const id = `faq-${index}`;
+            
+            // Set ARIA attributes
+            question.setAttribute('id', `question-${id}`);
+            question.setAttribute('aria-expanded', 'false');
+            question.setAttribute('aria-controls', `answer-${id}`);
+            answer.setAttribute('id', `answer-${id}`);
+            answer.setAttribute('aria-labelledby', `question-${id}`);
+            
+            // Set initial state
+            answer.style.maxHeight = '0';
+            
+            // Click handler
+            question.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleFAQ(item);
+            });
+            
+            // Keyboard navigation
+            question.addEventListener('keydown', (e) => {
+                // Toggle on Enter/Space
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleFAQ(item);
+                }
+                
+                // Navigate with arrow keys
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const direction = e.key === 'ArrowDown' ? 1 : -1;
+                    const nextIndex = (index + direction + faqItems.length) % faqItems.length;
+                    faqItems[nextIndex].querySelector('.faq-question').focus();
+                }
+            });
+        });
+        
+        // Open first FAQ by default
+        if (faqItems.length > 0) {
+            toggleFAQ(faqItems[0], true);
+        }
+    }
+    
+    // Toggle FAQ item
+    function toggleFAQ(item, forceOpen = false) {
+        const isOpening = forceOpen || !item.classList.contains('active');
+        const answer = item.querySelector('.faq-answer');
+        const question = item.querySelector('.faq-question');
+        
+        // Close all other items if opening this one
+        if (isOpening) {
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                if (otherItem !== item && otherItem.classList.contains('active')) {
+                    closeFAQ(otherItem);
+                }
+            });
+        }
+        
+        // Toggle current item
+        if (isOpening) {
+            item.classList.add('active');
+            question.setAttribute('aria-expanded', 'true');
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+            
+            // Close after a delay if forced open (for first item)
+            if (forceOpen) {
+                setTimeout(() => {
+                    closeFAQ(item);
+                }, 3000);
+            }
+        } else {
+            closeFAQ(item);
+        }
+    }
+    
+    // Close FAQ item
+    function closeFAQ(item) {
+        const answer = item.querySelector('.faq-answer');
+        const question = item.querySelector('.faq-question');
+        
+        item.classList.remove('active');
+        question.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = '0';
+    }
+    
+    // Initialize FAQ functionality when DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFAQ);
+    } else {
+        initFAQ();
+    }
+    
     // Mobile Navigation Elements
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
